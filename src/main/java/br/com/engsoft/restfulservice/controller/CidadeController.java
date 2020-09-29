@@ -5,11 +5,10 @@
  */
 package br.com.engsoft.restfulservice.controller;
 
-import br.com.engsoft.restfulservice.dao.interfaces.PessoaRepository;
-import br.com.engsoft.restfulservice.model.Pessoa;
+import br.com.engsoft.restfulservice.dao.interfaces.CidadeRepository;
+import br.com.engsoft.restfulservice.model.Cidade;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,13 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
  * @author tec-zoop
  */
 @RestController
-@RequestMapping({"/api/pessoas"})
-@CrossOrigin(origins = "http://localhost:8000")
-public class PessoaController {
-    private PessoaRepository repository;
+@RequestMapping({"/api/cidades"})
+public class CidadeController {
+    private CidadeRepository repository;
     
-    PessoaController(PessoaRepository pr) {
-        this.repository = pr;
+    CidadeController(CidadeRepository repository) {
+        this.repository = repository;
     }
     
     @GetMapping
@@ -39,24 +37,23 @@ public class PessoaController {
     }
     
     @GetMapping(path = {"/{id}"})
-    public ResponseEntity findById(@PathVariable long id) {
-        return repository.findById(id).map(record -> ResponseEntity.ok().body(record))
+    public ResponseEntity findById(@PathVariable Long id) {
+        return repository.findById(id).map(response -> ResponseEntity.ok().body(response))
                 .orElse(ResponseEntity.notFound().build());
     }
     
     @PostMapping
-    public Pessoa create(@RequestBody Pessoa pessoa) {
-        return repository.save(pessoa);
+    public Cidade create(@RequestBody Cidade cidade) {
+        return repository.save(cidade);
     }
     
     @PutMapping(value="/{id}")
-    public ResponseEntity update(@PathVariable("id") long id, @RequestBody Pessoa pessoa) {
+    public ResponseEntity update(@PathVariable("id") long id, @RequestBody Cidade cidade) {
         return repository.findById(id).map(record -> {
-            record.setCpf(pessoa.getCpf());
-            record.setNome(pessoa.getNome());
-            record.setData_de_nascimento(pessoa.getData_de_nascimento());
+            record.setSigla(cidade.getSigla());
+            record.setNome(cidade.getNome());
             
-            Pessoa updated = repository.save(record);
+            Cidade updated = repository.save(record);
             return ResponseEntity.ok().body(updated);
         }).orElse(ResponseEntity.notFound().build());
     }

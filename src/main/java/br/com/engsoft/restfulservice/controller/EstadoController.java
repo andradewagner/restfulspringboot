@@ -5,8 +5,8 @@
  */
 package br.com.engsoft.restfulservice.controller;
 
-import br.com.engsoft.restfulservice.dao.interfaces.PessoaRepository;
-import br.com.engsoft.restfulservice.model.Pessoa;
+import br.com.engsoft.restfulservice.dao.interfaces.EstadoRepository;
+import br.com.engsoft.restfulservice.model.Estado;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
  * @author tec-zoop
  */
 @RestController
-@RequestMapping({"/api/pessoas"})
+@RequestMapping({"/api/estados"})
 @CrossOrigin(origins = "http://localhost:8000")
-public class PessoaController {
-    private PessoaRepository repository;
-    
-    PessoaController(PessoaRepository pr) {
-        this.repository = pr;
+public class EstadoController {
+    private EstadoRepository repository;
+
+    EstadoController(EstadoRepository repository) {
+        this.repository = repository;
     }
     
     @GetMapping
@@ -39,24 +39,23 @@ public class PessoaController {
     }
     
     @GetMapping(path = {"/{id}"})
-    public ResponseEntity findById(@PathVariable long id) {
-        return repository.findById(id).map(record -> ResponseEntity.ok().body(record))
+    public ResponseEntity findById(@PathVariable Long id) {
+        return repository.findById(id).map(response -> ResponseEntity.ok().body(response))
                 .orElse(ResponseEntity.notFound().build());
     }
     
     @PostMapping
-    public Pessoa create(@RequestBody Pessoa pessoa) {
-        return repository.save(pessoa);
+    public Estado create(@RequestBody Estado estado) {
+        return repository.save(estado);
     }
     
-    @PutMapping(value="/{id}")
-    public ResponseEntity update(@PathVariable("id") long id, @RequestBody Pessoa pessoa) {
+    @PutMapping(value = {"/{id}"})
+    public ResponseEntity update(@PathVariable("id") Long id, Estado estado) {
         return repository.findById(id).map(record -> {
-            record.setCpf(pessoa.getCpf());
-            record.setNome(pessoa.getNome());
-            record.setData_de_nascimento(pessoa.getData_de_nascimento());
+            record.setSigla(estado.getSigla());
+            record.setNome(estado.getNome());
             
-            Pessoa updated = repository.save(record);
+            Estado updated = repository.save(record);
             return ResponseEntity.ok().body(updated);
         }).orElse(ResponseEntity.notFound().build());
     }
